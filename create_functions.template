@@ -1,0 +1,89 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "S3ZipFileBucket": {
+      "Type": "String",
+      "Description": "The S3 bucket where the .zip file is stored."
+    },
+    "S3ZipFileObjectKey": {
+      "Type": "String",
+      "Description": "The object key (including any 'folder prefix') of the .zip file containing the lambda functions."
+    }
+  },
+  "Resources": {
+    "DynamoDBPutItemsFunctionRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version" : "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [ "lambda.amazonaws.com" ]
+              },
+              "Action": [ "sts:AssumeRole" ]
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "LogWriter",
+            "PolicyDocument": {
+              "Version" : "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": "arn:aws:logs:*:*:*"
+                }
+              ]
+            }
+          },
+          {
+            "PolicyName": "DBWriter",
+            "PolicyDocument": {
+              "Version" : "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "dynamodb:PutItem"
+                  ],
+                  "Resource": { "Fn::Join":  [ "", [ "arn:aws:dynamodb:", { "Ref": "AWS::Region" }, ":", { "Ref": "AWS::AccountId" } , ":table/*" ] ] }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "DynamoDBPutItemsFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": { "Ref": "S3ZipFileBucket" },
+          "S3Key": { "Ref": "S3ZipFileObjectKey" }
+        },
+        "Description": "Used to populate a DynamoDB database from CloudFormation",
+        "Handler": "cloudformation_helpers.dynamoDBPutItems",
+        "Role": {"Fn::GetAtt" : [ "DynamoDBPutItemsFunctionRole", "Arn" ] },
+        "Runtime": "nodejs",
+        "Timeout": 30
+      },
+      "DependsOn": [
+        "DynamoDBPutItemsFunctionRole"
+      ]
+    }
+  },
+  "Outputs": {
+    "DynamoDBPutItemsFunctionArn": {
+      "Description": "The ARN of the DynamoDBPutItemsFunction, for use in other CloudFormation templates.",
+      "Value": { "Fn::GetAtt" : ["DynamoDBPutItemsFunction", "Arn"] }
+    }
+  }
+}
