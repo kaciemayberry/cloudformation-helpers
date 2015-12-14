@@ -88,13 +88,14 @@ A JSON array of items to be inserted, in JSON format (not DynamoDB format).
 #### Reference Output Name
 DynamoDBPutItemsFunctionArn
 
+
 ## Deployment (contributors)
 After making changes (i.e. adding a new helper function), please do the following:
 
 1. Upload this zipped repo to the com.gilt.public.backoffice/lambda_functions bucket. To produce the .zip file:
 
    ```
-     zip -r cloudformation-helpers.zip . -x *.git*
+     zip -r cloudformation-helpers.zip . -x *.git* -x *cloudformation-helpers.zip*
    ```
 
    Unfortunately we can't use the Github .zip file directly, because it zips the code into a subdirectory named after
@@ -102,3 +103,8 @@ After making changes (i.e. adding a new helper function), please do the followin
 
 2. Upload the edited create_cloufformation_helper_functions.template to com.gilt.public.backoffice/cloudformation_templates
 
+
+## License
+Copyright 2015 Gilt Groupe, Inc.
+
+Licensed under the Apache License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0
