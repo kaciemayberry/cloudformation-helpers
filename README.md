@@ -12,9 +12,9 @@ general manner - much the same way CloudFormation itself has permission to do al
 
 
 ## Usage
-1. Upload the .zip file of this repo from Github to an S3 bucket in your AWS account.
-2. Use the included create_functions.template to deploy a stack that creates the Lambda functions for you. Remember the stack name.
-3. Include the following resources in your CloudFormation template. These will create a) a nested stack that
+1. Use https://s3.amazonaws.com/com.gilt.public.backoffice/cloudformation_templates/create_cloufformation_helper_functions.template
+   to deploy a stack that creates the Lambda functions for you. Remember the stack name.
+2. Include the following resources in your CloudFormation template. These will create a) a nested stack that
    looks up the ARNs from the previous step and b) a custom resource that allows your template to read those ARNs.
    
    ```
@@ -37,7 +37,7 @@ general manner - much the same way CloudFormation itself has permission to do al
    ```
    
    You can either hardcode the stack name of your helper functions, or request it as a parameter.
-4. Use the ARNs from the previous step in a custom resource, to call those Lambda functions:
+3. Use the ARNs from the previous step in a custom resource, to call those Lambda functions:
 
    ```
    "PopulateTable": {
@@ -87,3 +87,18 @@ A JSON array of items to be inserted, in JSON format (not DynamoDB format).
 
 #### Reference Output Name
 DynamoDBPutItemsFunctionArn
+
+## Deployment (contributors)
+After making changes (i.e. adding a new helper function), please do the following:
+
+1. Upload this zipped repo to the com.gilt.public.backoffice/lambda_functions bucket. To produce the .zip file:
+
+   ```
+     zip -r cloudformation-helpers.zip . -x *.git*
+   ```
+
+   Unfortunately we can't use the Github .zip file directly, because it zips the code into a subdirectory named after
+   the repo; AWS Lambda then can't find the .js file containing the helper functions because it is not on the top-level.
+
+2. Upload the edited create_cloufformation_helper_functions.template to com.gilt.public.backoffice/cloudformation_templates
+

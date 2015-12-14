@@ -1,15 +1,5 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Parameters": {
-    "S3ZipFileBucket": {
-      "Type": "String",
-      "Description": "The S3 bucket where the .zip file is stored."
-    },
-    "S3ZipFileObjectKey": {
-      "Type": "String",
-      "Description": "The object key (including any 'folder prefix') of the .zip file containing the lambda functions."
-    }
-  },
   "Resources": {
     "DynamoDBPutItemsFunctionRole": {
       "Type": "AWS::IAM::Role",
@@ -66,8 +56,8 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "S3Bucket": { "Ref": "S3ZipFileBucket" },
-          "S3Key": { "Ref": "S3ZipFileObjectKey" }
+          "S3Bucket": "com.gilt.public.backoffice",
+          "S3Key": "lambda_functions/cloudformation-helpers.zip"
         },
         "Description": "Used to populate a DynamoDB database from CloudFormation",
         "Handler": "cloudformation_helpers.dynamoDBPutItems",
