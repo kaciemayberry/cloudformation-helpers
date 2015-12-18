@@ -12,7 +12,7 @@ general manner - much the same way CloudFormation itself has permission to do al
 
 
 ## Usage
-1. Use https://s3.amazonaws.com/com.gilt.public.backoffice/cloudformation_templates/create_cloufformation_helper_functions.template
+1. Use https://s3.amazonaws.com/com.gilt.public.backoffice/cloudformation_templates/create_cloudformation_helper_functions.template
    to deploy a stack that creates the Lambda functions for you. Remember the stack name.
 2. Include the following resources in your CloudFormation template. These will create a) a nested stack that
    looks up the ARNs from the previous step and b) a custom resource that allows your template to read those ARNs.
@@ -101,7 +101,7 @@ After making changes (i.e. adding a new helper function), please do the followin
    Unfortunately we can't use the Github .zip file directly, because it zips the code into a subdirectory named after
    the repo; AWS Lambda then can't find the .js file containing the helper functions because it is not on the top-level.
 
-2. Upload the edited create_cloufformation_helper_functions.template to com.gilt.public.backoffice/cloudformation_templates
+2. Upload the edited create_cloudformation_helper_functions.template to com.gilt.public.backoffice/cloudformation_templates
 
 
 ## License
