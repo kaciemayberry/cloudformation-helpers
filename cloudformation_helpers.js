@@ -4,7 +4,6 @@ var response = require('./lib/cfn-response');
 
 exports.dynamoDBPutItems = function(event, context) {
   var p = event.ResourceProperties;
-  console.log('Received event: ' + JSON.stringify(event));
   if (event.RequestType == 'Delete') {
     response.send(event, context, response.SUCCESS);
     return;
