@@ -53,7 +53,7 @@ function formatForDynamo(value, topLevel) {
   var result = undefined;
   if (value == 'true' || value == 'false') {
     result = {'BOOL': value == 'true'}
-  } else if (!isNaN(value)) {
+  } else if (!isNaN(value) && value.trim() != '') {
     result = {'N': value}
   } else if (Array.isArray(value)) {
     var arr = [];
