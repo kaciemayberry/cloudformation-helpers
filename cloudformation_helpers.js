@@ -24,6 +24,8 @@ exports.snsSubscribe = function(event, context) {
   const allowedProtocols = ['application', 'email', 'email-json', 'http', 'https', 'lambda', 'sms', 'sqs'];
   var p = event.ResourceProperties;
   if (event.RequestType == 'Delete') {
+    // TODO: Would be nice to delete the subscription here, which likely requires persisting the
+    // SubscriptionArn for later lookup.
     response.send(event, context, response.SUCCESS);
     return;
   }
