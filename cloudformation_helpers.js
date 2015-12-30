@@ -1,6 +1,7 @@
 var AWS = require('aws-sdk');
 var dynamoDB = new AWS.DynamoDB();
 var response = require('./lib/cfn-response');
+var sns = new AWS.SNS();
 
 exports.dynamoDBPutItems = function(event, context) {
   var p = event.ResourceProperties;
@@ -11,10 +12,40 @@ exports.dynamoDBPutItems = function(event, context) {
 
   if (!Array.isArray(p.Items)) {
     error("Must specify a list of items to insert.", event, context);
-  } else if (p.TableName === undefined) {
+  } else if (!p.TableName) {
     error("Must specify a table to insert into.", event, context);
   } else {
     putItems(p.Items, p.TableName, event, context, []);
+  }
+}
+
+// Exposes the SNS.subscribe API method
+exports.snsSubscribe = function(event, context) {
+  const allowedProtocols = ['application', 'email', 'email-json', 'http', 'https', 'lambda', 'sms', 'sqs'];
+  var p = event.ResourceProperties;
+  if (event.RequestType == 'Delete') {
+    response.send(event, context, response.SUCCESS);
+    return;
+  }
+
+  if (!p.TopicArn) {
+    error("Must specify a TopicArn to subscribe to.", event, context);
+  } else if (!p.Endpoint) {
+    error("Must specify an Endpoint that receives messages.", event, context);
+  } else if (allowedProtocols.indexOf(p.Protocol) < 0) {
+    error("Must speficy one of these supported protocols: " + allowedProtocols, event, context);
+  } else {
+    sns.subscribe({
+      Endpoint: p.Endpoint,
+      Protocol: p.Protocol,
+      TopicArn: p.TopicArn
+    }, function(err, data) {
+      if (err) {
+        error(err, event, context);
+      } else {
+        response.send(event, context, response.SUCCESS, { "SubscriptionArn": data.SubscriptionArn });
+      }
+    });
   }
 }
 

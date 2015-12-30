@@ -89,6 +89,25 @@ A JSON array of items to be inserted, in JSON format (not DynamoDB format).
 DynamoDBPutItemsFunctionArn
 
 
+### Subscribe to SNS topics
+
+Mirrors the SNS.Subscribe API method (http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SNS.html#subscribe-property).
+
+#### Parameters
+
+##### Endpoint
+The endpoint that receives the SNS messages.
+
+##### Protocol
+The type of endpoint. Can be one of the following values: application, email, email-json, http, https, lambda, sms, sqs.
+
+##### TopicArn
+The SNS topic to subscribe to.
+
+#### Reference Output Name
+SnsSubscribeFunctionArn
+
+
 ## Deployment (contributors)
 After making changes (i.e. adding a new helper function), please do the following:
 
