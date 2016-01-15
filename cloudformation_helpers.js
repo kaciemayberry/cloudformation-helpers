@@ -38,6 +38,7 @@ exports.s3PutObject = function(event, context) {
     return;
   }
 
+  delete p.ServiceToken;
   s3.putObject(p, function(err, data) {
     if (err) {
       error(err, event, context);
