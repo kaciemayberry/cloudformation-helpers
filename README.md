@@ -89,6 +89,28 @@ A JSON array of items to be inserted, in JSON format (not DynamoDB format).
 DynamoDBPutItemsFunctionArn
 
 
+### Put S3 Objects
+
+Mirrors the S3.putObject API method (http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putObject-property).
+
+#### Parameters
+
+##### Bucket
+The S3 bucket to put the object into
+
+##### Key
+The name of the object. Can include a "path" for organization in S3.
+
+##### Body
+The content of the object being put into S3 (a string).
+
+##### Other
+Please see the reference above for further parameters - these are only the most commonly-used ones.
+
+#### Reference Output Name
+S3PutObjectFunctionArn
+
+
 ### Subscribe to SNS topics
 
 Mirrors the SNS.Subscribe API method (http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SNS.html#subscribe-property).

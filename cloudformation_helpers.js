@@ -1,7 +1,8 @@
 var AWS = require('aws-sdk');
-var dynamoDB = new AWS.DynamoDB();
-var response = require('./lib/cfn-response');
-var sns = new AWS.SNS();
+var dynamoDB = new AWS.DynamoDB(),
+    response = require('./lib/cfn-response'),
+    s3 = new AWS.S3(),
+    sns = new AWS.SNS();
 
 exports.dynamoDBPutItems = function(event, context) {
   var p = event.ResourceProperties;
@@ -17,6 +18,33 @@ exports.dynamoDBPutItems = function(event, context) {
   } else {
     putItems(p.Items, p.TableName, event, context, []);
   }
+}
+
+// Puts an object into S3.
+exports.s3PutObject = function(event, context) {
+  var p = event.ResourceProperties;
+  if (event.RequestType == 'Delete') {
+    s3.deleteObject({
+      Bucket: p.Bucket,
+      Key: p.Key,
+      RequestPayer: p.RequestPayer
+    }, function(err, data) {
+      if (err) {
+        error(err, event, context);
+      } else {
+        response.send(event, context, response.SUCCESS);
+      }
+    });
+    return;
+  }
+
+  s3.putObject(p, function(err, data) {
+    if (err) {
+      error(err, event, context);
+    } else {
+      response.send(event, context, response.SUCCESS, { "data": data });
+    }
+  });
 }
 
 // Exposes the SNS.subscribe API method
