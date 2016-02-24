@@ -28,3 +28,4 @@ node_modules
 
 # Other local things to ignore
 cloudformation-helpers.zip
+.DS_Store

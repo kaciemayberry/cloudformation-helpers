@@ -1,6 +1,57 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Resources": {
+    "ReferenceDB": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "key",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "key",
+            "KeyType": "HASH"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 1,
+          "WriteCapacityUnits": 1
+        },
+        "TableName": { "Fn::Join": [ "-", [ { "Ref" : "AWS::StackName" }, "reference" ] ] }
+      }
+    },
+    "RoleBasePolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "Description" : { "Fn::Join": [ " ", [ "Base policy for all Lambda function roles in", { "Ref" : "AWS::StackName" }, "." ] ] },
+        "PolicyDocument" : {
+          "Version" : "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Resource": "arn:aws:logs:*:*:*"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "dynamodb:GetItem",
+                "dynamodb:PutItem",
+                "dynamodb:Scan"
+              ],
+              "Resource": { "Fn::Join":  [ "", [ "arn:aws:dynamodb:", { "Ref": "AWS::Region" }, ":", { "Ref": "AWS::AccountId" } , ":table/", { "Ref": "ReferenceDB" } ] ] }
+            }
+          ]
+        }
+      }
+    },
     "DynamoDBPutItemsFunctionRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -16,24 +67,10 @@
             }
           ]
         },
+        "ManagedPolicyArns": [
+          { "Ref": "RoleBasePolicy" }
+        ],
         "Policies": [
-          {
-            "PolicyName": "LogWriter",
-            "PolicyDocument": {
-              "Version" : "2012-10-17",
-              "Statement": [
-                {
-                  "Effect": "Allow",
-                  "Action": [
-                    "logs:CreateLogGroup",
-                    "logs:CreateLogStream",
-                    "logs:PutLogEvents"
-                  ],
-                  "Resource": "arn:aws:logs:*:*:*"
-                }
-              ]
-            }
-          },
           {
             "PolicyName": "DBWriter",
             "PolicyDocument": {
@@ -84,24 +121,10 @@
             }
           ]
         },
+        "ManagedPolicyArns": [
+          { "Ref": "RoleBasePolicy" }
+        ],
         "Policies": [
-          {
-            "PolicyName": "LogWriter",
-            "PolicyDocument": {
-              "Version" : "2012-10-17",
-              "Statement": [
-                {
-                  "Effect": "Allow",
-                  "Action": [
-                    "logs:CreateLogGroup",
-                    "logs:CreateLogStream",
-                    "logs:PutLogEvents"
-                  ],
-                  "Resource": "arn:aws:logs:*:*:*"
-                }
-              ]
-            }
-          },
           {
             "PolicyName": "S3Writer",
             "PolicyDocument": {
@@ -153,24 +176,10 @@
             }
           ]
         },
+        "ManagedPolicyArns": [
+          { "Ref": "RoleBasePolicy" }
+        ],
         "Policies": [
-          {
-            "PolicyName": "LogWriter",
-            "PolicyDocument": {
-              "Version" : "2012-10-17",
-              "Statement": [
-                {
-                  "Effect": "Allow",
-                  "Action": [
-                    "logs:CreateLogGroup",
-                    "logs:CreateLogStream",
-                    "logs:PutLogEvents"
-                  ],
-                  "Resource": "arn:aws:logs:*:*:*"
-                }
-              ]
-            }
-          },
           {
             "PolicyName": "SNSSubscriber",
             "PolicyDocument": {
@@ -179,7 +188,8 @@
                 {
                   "Effect": "Allow",
                   "Action": [
-                    "sns:subscribe"
+                    "sns:subscribe",
+                    "sns:unsubscribe"
                   ],
                   "Resource": "*"
                 }
@@ -197,7 +207,7 @@
           "S3Key": "lambda_functions/cloudformation-helpers.zip"
         },
         "Description": "Used to subscribe to existing SNS topics.",
-        "Handler": "cloudformation_helpers.snsSubscribe",
+        "Handler": "aws/sns.subscribe",
         "Role": {"Fn::GetAtt" : [ "SnsSubscribeFunctionRole", "Arn" ] },
         "Runtime": "nodejs",
         "Timeout": 30

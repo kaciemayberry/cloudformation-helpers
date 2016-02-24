@@ -1,8 +1,30 @@
 var AWS = require('aws-sdk');
-var dynamoDB = new AWS.DynamoDB(),
+var Promise = require('bluebird');
+var apiGateway = Promise.promisifyAll(new AWS.APIGateway()),
+    dynamoDB = new AWS.DynamoDB(),
     response = require('./lib/cfn-response'),
     s3 = new AWS.S3(),
     sns = new AWS.SNS();
+
+exports.apiGatewayCreateRestApi = function(event, context) {
+  var p = event.ResourceProperties;
+  if (event.RequestType == 'Delete') {
+    // TODO: deleteRestApi here
+    response.send(event, context, response.SUCCESS);
+  } else {
+    apiGateway.createRestApiAsync({
+      name: p.name,
+      cloneFrom: p.cloneFrom,
+      description: p.description
+    })
+    .then(function(data) {
+      response.send(event, context, response.SUCCESS, { "data": data });
+    })
+    .catch(function(err) {
+      error(err, event, context);
+    });
+  }
+}
 
 exports.dynamoDBPutItems = function(event, context) {
   var p = event.ResourceProperties;
@@ -46,38 +68,6 @@ exports.s3PutObject = function(event, context) {
       response.send(event, context, response.SUCCESS, { "data": data });
     }
   });
-}
-
-// Exposes the SNS.subscribe API method
-exports.snsSubscribe = function(event, context) {
-  const allowedProtocols = ['application', 'email', 'email-json', 'http', 'https', 'lambda', 'sms', 'sqs'];
-  var p = event.ResourceProperties;
-  if (event.RequestType == 'Delete') {
-    // TODO: Would be nice to delete the subscription here, which likely requires persisting the
-    // SubscriptionArn for later lookup.
-    response.send(event, context, response.SUCCESS);
-    return;
-  }
-
-  if (!p.TopicArn) {
-    error("Must specify a TopicArn to subscribe to.", event, context);
-  } else if (!p.Endpoint) {
-    error("Must specify an Endpoint that receives messages.", event, context);
-  } else if (allowedProtocols.indexOf(p.Protocol) < 0) {
-    error("Must speficy one of these supported protocols: " + allowedProtocols, event, context);
-  } else {
-    sns.subscribe({
-      Endpoint: p.Endpoint,
-      Protocol: p.Protocol,
-      TopicArn: p.TopicArn
-    }, function(err, data) {
-      if (err) {
-        error(err, event, context);
-      } else {
-        response.send(event, context, response.SUCCESS, { "SubscriptionArn": data.SubscriptionArn });
-      }
-    });
-  }
 }
 
 // Puts items into DynamoDB, iterating over the list recursively.

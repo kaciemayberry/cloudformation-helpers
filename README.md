@@ -114,6 +114,8 @@ S3PutObjectFunctionArn
 ### Subscribe to SNS topics
 
 Mirrors the SNS.Subscribe API method (http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SNS.html#subscribe-property).
+To be used when the SNS topic already exists (since CloudFormation allows subscriptions to be created when creating SNS
+topics only).
 
 #### Parameters
 
@@ -126,8 +128,14 @@ The type of endpoint. Can be one of the following values: application, email, em
 ##### TopicArn
 The SNS topic to subscribe to.
 
+#### Output
+The result of the SNS.Subscribe API method, i.e. SubscriptionArn
+
 #### Reference Output Name
 SnsSubscribeFunctionArn
+
+#### Example/Test Template
+[test/aws/sns.subscribe.template]
 
 
 ## Deployment (contributors)
