@@ -2,9 +2,7 @@ var AWS = require('aws-sdk');
 var Promise = require('bluebird');
 var apiGateway = Promise.promisifyAll(new AWS.APIGateway()),
     dynamoDB = new AWS.DynamoDB(),
-    response = require('./lib/cfn-response'),
-    s3 = new AWS.S3(),
-    sns = new AWS.SNS();
+    response = require('./lib/cfn-response');
 
 exports.apiGatewayCreateRestApi = function(event, context) {
   var p = event.ResourceProperties;
@@ -40,34 +38,6 @@ exports.dynamoDBPutItems = function(event, context) {
   } else {
     putItems(p.Items, p.TableName, event, context, []);
   }
-}
-
-// Puts an object into S3.
-exports.s3PutObject = function(event, context) {
-  var p = event.ResourceProperties;
-  if (event.RequestType == 'Delete') {
-    s3.deleteObject({
-      Bucket: p.Bucket,
-      Key: p.Key,
-      RequestPayer: p.RequestPayer
-    }, function(err, data) {
-      if (err) {
-        error(err, event, context);
-      } else {
-        response.send(event, context, response.SUCCESS);
-      }
-    });
-    return;
-  }
-
-  delete p.ServiceToken;
-  s3.putObject(p, function(err, data) {
-    if (err) {
-      error(err, event, context);
-    } else {
-      response.send(event, context, response.SUCCESS, { "data": data });
-    }
-  });
 }
 
 // Puts items into DynamoDB, iterating over the list recursively.

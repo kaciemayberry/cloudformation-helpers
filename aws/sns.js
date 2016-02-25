@@ -15,7 +15,7 @@ Subscribe.prototype.handleCreate = function() {
     Endpoint: p.Endpoint,
     Protocol: p.Protocol,
     TopicArn: p.TopicArn
-  })
+  });
 }
 Subscribe.prototype.handleDelete = function(referenceData) {
   if (referenceData) {

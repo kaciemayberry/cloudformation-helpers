@@ -152,7 +152,7 @@
           "S3Key": "lambda_functions/cloudformation-helpers.zip"
         },
         "Description": "Used to put objects into S3.",
-        "Handler": "cloudformation_helpers.s3PutObject",
+        "Handler": "aws/s3.putObject",
         "Role": {"Fn::GetAtt" : [ "S3PutObjectFunctionRole", "Arn" ] },
         "Runtime": "nodejs",
         "Timeout": 30
