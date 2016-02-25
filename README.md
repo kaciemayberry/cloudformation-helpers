@@ -107,8 +107,15 @@ The content of the object being put into S3 (a string).
 ##### Other
 Please see the reference above for further parameters - these are only the most commonly-used ones.
 
+#### Output
+The result of the S3.PutObject API method.
+
 #### Reference Output Name
 S3PutObjectFunctionArn
+
+#### Example/Test Template
+[s3.putObject.template](test/aws/s3.putObject.template)
+
 
 
 ### Subscribe to SNS topics
@@ -135,7 +142,7 @@ The result of the SNS.Subscribe API method, i.e. SubscriptionArn
 SnsSubscribeFunctionArn
 
 #### Example/Test Template
-[test/aws/sns.subscribe.template]
+[sns.subscribe.template](test/aws/sns.subscribe.template)
 
 
 ## Deployment (contributors)
