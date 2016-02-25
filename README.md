@@ -76,6 +76,8 @@ to ensure that the format of the data is correct.
 
 Warning: it is a PUT, so it will overwrite any items that already exist for the table's primary key.
 
+This will delete the items when the corresponding stack is deleted.
+
 #### Parameters
 
 ##### TableName
@@ -85,13 +87,21 @@ it does not already exist.
 ##### Items
 A JSON array of items to be inserted, in JSON format (not DynamoDB format).
 
+#### Output
+The list of TableName/Key pairs of items created.
+
 #### Reference Output Name
 DynamoDBPutItemsFunctionArn
+
+#### Example/Test Template
+[dynamo.putItems.template](test/aws/dynamo.putItems.template)
 
 
 ### Put S3 Objects
 
 Mirrors the [S3.putObject API method](http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putObject-property).
+
+This will delete the objects when the corresponding stack is deleted.
 
 #### Parameters
 
@@ -123,6 +133,8 @@ S3PutObjectFunctionArn
 Mirrors the [SNS.Subscribe API method](http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SNS.html#subscribe-property).
 To be used when the SNS topic already exists (since CloudFormation allows subscriptions to be created when creating SNS
 topics only).
+
+This will delete the subscription when the corresponding stack is deleted.
 
 #### Parameters
 
@@ -161,6 +173,6 @@ After making changes (i.e. adding a new helper function), please do the followin
 
 
 ## License
-Copyright 2015 Gilt Groupe, Inc.
+Copyright 2016 Gilt Groupe, Inc.
 
 Licensed under the Apache License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0

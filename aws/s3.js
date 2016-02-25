@@ -1,7 +1,6 @@
 var Promise = require('bluebird'),
     AWS = require('aws-sdk'),
     base = require('lib/base'),
-    dynamoDB = Promise.promisifyAll(new AWS.DynamoDB()),
     s3 = Promise.promisifyAll(new AWS.S3());
 
 // Exposes the SNS.subscribe API method

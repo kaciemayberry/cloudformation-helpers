@@ -79,6 +79,8 @@
                 {
                   "Effect": "Allow",
                   "Action": [
+                    "dynamodb:DeleteItem",
+                    "dynamodb:DescribeTable",
                     "dynamodb:PutItem"
                   ],
                   "Resource": { "Fn::Join":  [ "", [ "arn:aws:dynamodb:", { "Ref": "AWS::Region" }, ":", { "Ref": "AWS::AccountId" } , ":table/*" ] ] }
@@ -97,7 +99,7 @@
           "S3Key": "lambda_functions/cloudformation-helpers.zip"
         },
         "Description": "Used to populate a DynamoDB database from CloudFormation",
-        "Handler": "cloudformation_helpers.dynamoDBPutItems",
+        "Handler": "aws/dynamo.putItems",
         "Role": {"Fn::GetAtt" : [ "DynamoDBPutItemsFunctionRole", "Arn" ] },
         "Runtime": "nodejs",
         "Timeout": 30
