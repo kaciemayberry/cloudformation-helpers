@@ -91,7 +91,7 @@ DynamoDBPutItemsFunctionArn
 
 ### Put S3 Objects
 
-Mirrors the S3.putObject API method (http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putObject-property).
+Mirrors the [S3.putObject API method](http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putObject-property).
 
 #### Parameters
 
@@ -120,7 +120,7 @@ S3PutObjectFunctionArn
 
 ### Subscribe to SNS topics
 
-Mirrors the SNS.Subscribe API method (http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SNS.html#subscribe-property).
+Mirrors the [SNS.Subscribe API method](http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SNS.html#subscribe-property).
 To be used when the SNS topic already exists (since CloudFormation allows subscriptions to be created when creating SNS
 topics only).
 
