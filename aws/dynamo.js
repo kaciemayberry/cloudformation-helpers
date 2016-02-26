@@ -64,7 +64,7 @@ PutItems.prototype.handleDelete = function(referenceData) {
       }
     });
   } else {
-    return Promise.try(function() {});
+    return helpers.futureSuccessful();
   }
 }
 exports.putItems = function(event, context) {

@@ -101,7 +101,7 @@ DynamoDBPutItemsFunctionArn
 
 Mirrors the [S3.putObject API method](http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putObject-property).
 
-This will delete the objects when the corresponding stack is deleted.
+This will delete the objects and any added sub-objects (for "folders") when the corresponding stack is deleted.
 
 #### Parameters
 

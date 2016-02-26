@@ -1,6 +1,7 @@
 var Promise = require('bluebird'),
     AWS = require('aws-sdk'),
     base = require('lib/base'),
+    helpers = require('lib/helpers'),
     s3 = Promise.promisifyAll(new AWS.S3());
 
 // Exposes the SNS.subscribe API method
@@ -15,9 +16,31 @@ PutObject.prototype.handleCreate = function() {
 }
 PutObject.prototype.handleDelete = function(referenceData) {
   var p = this.event.ResourceProperties;
-  return s3.deleteObjectAsync({
-    Bucket: p.Bucket,
-    Key: p.Key
+  var deleteSubObjects =
+    (p.Key.endsWith("/"))
+    ? s3.listObjectsAsync({
+        Bucket: p.Bucket,
+        Prefix: p.Key
+      })
+      .then(function(subObjects) {
+        return Promise
+        .map(
+          subObjects.Contents,
+          function(item) {
+            return s3.deleteObjectAsync({
+              Bucket: p.Bucket,
+              Key: item.Key
+            })
+          }
+        )
+      })
+    : helpers.futureSuccessful();
+  return deleteSubObjects
+  .then(function() {
+    return s3.deleteObjectAsync({
+      Bucket: p.Bucket,
+      Key: p.Key
+    });
   });
 }
 exports.putObject = function(event, context) {
