@@ -16,9 +16,9 @@ PutObject.prototype.handleCreate = function() {
 }
 PutObject.prototype.handleDelete = function(referenceData) {
   var p = this.event.ResourceProperties;
-  var deleteSubObjects =
-    (p.Key.endsWith("/"))
-    ? s3.listObjectsAsync({
+  return Promise.try(function() {
+    if (p.Key.endsWith("/")) {
+      s3.listObjectsAsync({
         Bucket: p.Bucket,
         Prefix: p.Key
       })
@@ -34,8 +34,8 @@ PutObject.prototype.handleDelete = function(referenceData) {
           }
         )
       })
-    : helpers.futureSuccessful();
-  return deleteSubObjects
+    }
+  })
   .then(function() {
     return s3.deleteObjectAsync({
       Bucket: p.Bucket,

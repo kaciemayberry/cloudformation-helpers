@@ -1,7 +1,6 @@
 var Promise = require('bluebird'),
     AWS = require('aws-sdk'),
     base = require('lib/base'),
-    helpers = require('lib/helpers'),
     sns = Promise.promisifyAll(new AWS.SNS());
 
 // Exposes the SNS.subscribe API method
@@ -18,13 +17,13 @@ Subscribe.prototype.handleCreate = function() {
   });
 }
 Subscribe.prototype.handleDelete = function(referenceData) {
-  if (referenceData) {
-    return sns.unsubscribeAsync({
-      SubscriptionArn: referenceData.SubscriptionArn
-    });
-  } else {
-    return helpers.futureSuccessful();
-  }
+  return Promise.try(function() {
+    if (referenceData && referenceData.SubscriptionArn) {
+      return sns.unsubscribeAsync({
+        SubscriptionArn: referenceData.SubscriptionArn
+      });
+    }
+  });
 }
 exports.subscribe = function(event, context) {
   handler = new Subscribe(event, context);

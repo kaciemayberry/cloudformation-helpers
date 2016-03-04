@@ -43,29 +43,29 @@ PutItems.prototype.handleCreate = function() {
   });
 }
 PutItems.prototype.handleDelete = function(referenceData) {
-  if (referenceData) {
-    return Promise
-    .map(
-      referenceData.ItemsInserted,
-      function(item) {
-        return dynamoDB
-        .deleteItemAsync({
-          TableName: item.TableName,
-          Key: helpers.formatForDynamo(item.Key, true)
-        })
-        .then(function(data) {
-          return item.Key;
-        });
-      }
-    )
-    .then(function(itemsDeleted) {
-      return {
-        ItemsDeleted: itemsDeleted
-      }
-    });
-  } else {
-    return helpers.futureSuccessful();
-  }
+  return Promise.try(function() {
+    if (referenceData) {
+      return Promise
+      .map(
+        referenceData.ItemsInserted,
+        function(item) {
+          return dynamoDB
+          .deleteItemAsync({
+            TableName: item.TableName,
+            Key: helpers.formatForDynamo(item.Key, true)
+          })
+          .then(function(data) {
+            return item.Key;
+          });
+        }
+      )
+      .then(function(itemsDeleted) {
+        return {
+          ItemsDeleted: itemsDeleted
+        }
+      });
+    }
+  });
 }
 exports.putItems = function(event, context) {
   handler = new PutItems(event, context);
