@@ -5,8 +5,8 @@ var Promise = require('bluebird'),
     s3 = Promise.promisifyAll(new AWS.S3());
 
 // Exposes the SNS.subscribe API method
-function PutObject(event, context, functionIdentifier) {
-  base.Handler.call(this, event, context, functionIdentifier);
+function PutObject(event, context) {
+  base.Handler.call(this, event, context);
 }
 PutObject.prototype = Object.create(base.Handler.prototype);
 PutObject.prototype.handleCreate = function() {
@@ -44,6 +44,6 @@ PutObject.prototype.handleDelete = function(referenceData) {
   });
 }
 exports.putObject = function(event, context) {
-  handler = new PutObject(event, context, "S3PutObjectFunction");
+  handler = new PutObject(event, context);
   handler.handle();
 }

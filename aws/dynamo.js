@@ -5,8 +5,8 @@ var Promise = require('bluebird'),
     dynamoDB = Promise.promisifyAll(new AWS.DynamoDB());
 
 // Exposes the SNS.subscribe API method
-function PutItems(event, context, functionIdentifier) {
-  base.Handler.call(this, event, context, functionIdentifier);
+function PutItems(event, context) {
+  base.Handler.call(this, event, context);
 }
 PutItems.prototype = Object.create(base.Handler.prototype);
 PutItems.prototype.handleCreate = function() {
@@ -68,6 +68,6 @@ PutItems.prototype.handleDelete = function(referenceData) {
   }
 }
 exports.putItems = function(event, context) {
-  handler = new PutItems(event, context, "DynamoDBPutItemsFunction");
+  handler = new PutItems(event, context);
   handler.handle();
 }
