@@ -52,6 +52,60 @@
         }
       }
     },
+    "ApiGatewayCreateApiFunctionRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version" : "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [ "lambda.amazonaws.com" ]
+              },
+              "Action": [ "sts:AssumeRole" ]
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          { "Ref": "RoleBasePolicy" }
+        ],
+        "Policies": [
+          {
+            "PolicyName": "ApiGatewayWriter",
+            "PolicyDocument": {
+              "Version" : "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "apigateway:*"
+                  ],
+                  "Resource": "*"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "ApiGatewayCreateApiFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "com.gilt.public.backoffice",
+          "S3Key": "lambda_functions/cloudformation-helpers.zip"
+        },
+        "Description": "Used to create a full API in Api Gateway.",
+        "Handler": "aws/apiGateway.createApi",
+        "Role": {"Fn::GetAtt" : [ "ApiGatewayCreateApiFunctionRole", "Arn" ] },
+        "Runtime": "nodejs",
+        "Timeout": 30
+      },
+      "DependsOn": [
+        "ApiGatewayCreateApiFunctionRole"
+      ]
+    },
     "DynamoDBPutItemsFunctionRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -221,6 +275,10 @@
     }
   },
   "Outputs": {
+    "ApiGatewayCreateApiFunctionArn": {
+      "Description": "The ARN of the ApiGatewayCreateApiFunction, for use in other CloudFormation templates.",
+      "Value": { "Fn::GetAtt" : ["ApiGatewayCreateApiFunction", "Arn"] }
+    },
     "DynamoDBPutItemsFunctionArn": {
       "Description": "The ARN of the DynamoDBPutItemsFunction, for use in other CloudFormation templates.",
       "Value": { "Fn::GetAtt" : ["DynamoDBPutItemsFunction", "Arn"] }

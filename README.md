@@ -68,6 +68,77 @@ general manner - much the same way CloudFormation itself has permission to do al
 
 ## Included functions
 
+### Create a full API in API Gateway
+
+Pass in all of the components of the API endpoints, and the API will be created in API Gateway.
+
+This will delete the entire API when the corresponding stack is deleted.
+
+#### Parameters
+
+##### name
+The name of the API, seen in the list of APIs in AWS Console.
+
+##### description
+The description of what the API does.
+
+##### endpoints
+A JSON array of (see the example template below for a working example):
+
+```javascript
+  {
+    "resource": {
+      "sub-resource": {
+        "GET": {
+          "authorizationType": "NONE",
+          "integration": {
+            "type": "MOCK",
+            "contentType": "text/html"
+          }
+        }
+      },
+      "POST": {
+        "authorizationType": "NONE",
+        "integration": {
+          "type": "AWS",
+          "integrationHttpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:*:*:function:your-function-name/invocations",
+          "contentType": "application/json"
+        }
+      }
+    }
+  }
+```
+
+1. The properties of the JSON document are either a) the HTTP method or b) a sub-resource.
+2. The resources cannot include a '/' - any resources nested in the path should also be nested
+   in the JSON document.
+3. The parameters of each http method object are the same as putMethod callh ere:
+   http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#putMethod-property -
+   except that httpMethod, resourceId, and restApiId will be added for you.
+4. Each http method object can also optionally specify an "integration" property, which follows
+   http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#putIntegration-property with
+   the same properties automatically filled in for you.
+5. The "integration" property must include a "contentType" property that specifies the response
+   Content-Type of the endpoint.
+
+#### Output
+
+##### baseUrl
+The base url of the API endpoints. Combine this with the relative paths defined in the config to
+put together the full url for the API call.
+
+##### restApiId
+The id of the API that is created.
+
+
+#### Reference Output Name
+ApiGatewayCreateApiFunction
+
+#### Example/Test Template
+[apiGateway.createApi.template](test/aws/apiGateway.createApi.template)
+
+
 ### Insert items into DynamoDB
 
 Pass in a list of items to be inserted into a DynamoDB table. This is useful to provide a template for the

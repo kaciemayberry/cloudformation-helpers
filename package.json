@@ -2,7 +2,6 @@
   "name": "cloudformation-helpers",
   "version": "0.0.0",
   "description": "A set of helper methods to fill in the gaps in existing CloudFormation support.",
-  "main": "cloudformation_helpers.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/gilt/cloudformation-helpers"
