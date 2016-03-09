@@ -168,6 +168,32 @@ DynamoDBPutItemsFunctionArn
 [dynamo.putItems.template](test/aws/dynamo.putItems.template)
 
 
+### Create a Kinesis stream
+
+Mirrors the [Kinesis.createStream API method](http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Kinesis.html#createStream-property).
+Yes, CloudFormation does support creating a Kinesis stream, but it does not allow you to specify the steam name; this
+helper does.
+
+This will delete the stream when the corresponding stack is deleted.
+
+#### Parameters
+
+##### ShardCount
+The number of shards for the stream. Required; no default.
+
+##### StreamName
+The name of the stream. Required.
+
+#### Output
+StreamName and Arn (of the stream) - matches the output of the existing CloudFormation task.
+
+#### Reference Output Name
+KinesisCreateStreamFunctionArn
+
+#### Example/Test Template
+[kinesis.createStream.template](test/aws/kinesis.createStream.template)
+
+
 ### Put S3 Objects
 
 Mirrors the [S3.putObject API method](http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putObject-property).

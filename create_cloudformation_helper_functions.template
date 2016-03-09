@@ -162,6 +162,62 @@
         "DynamoDBPutItemsFunctionRole"
       ]
     },
+    "KinesisCreateStreamFunctionRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version" : "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [ "lambda.amazonaws.com" ]
+              },
+              "Action": [ "sts:AssumeRole" ]
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          { "Ref": "RoleBasePolicy" }
+        ],
+        "Policies": [
+          {
+            "PolicyName": "KinesisCreator",
+            "PolicyDocument": {
+              "Version" : "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "kinesis:CreateStream",
+                    "kinesis:DeleteStream",
+                    "kinesis:DescribeStream"
+                  ],
+                  "Resource": "*"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "KinesisCreateStreamFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "com.gilt.public.backoffice",
+          "S3Key": "lambda_functions/cloudformation-helpers.zip"
+        },
+        "Description": "Used to create a Kinesis stream",
+        "Handler": "aws/kinesis.createStream",
+        "Role": {"Fn::GetAtt" : [ "KinesisCreateStreamFunctionRole", "Arn" ] },
+        "Runtime": "nodejs",
+        "Timeout": 30
+      },
+      "DependsOn": [
+        "KinesisCreateStreamFunctionRole"
+      ]
+    },
     "S3PutObjectFunctionRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -282,6 +338,10 @@
     "DynamoDBPutItemsFunctionArn": {
       "Description": "The ARN of the DynamoDBPutItemsFunction, for use in other CloudFormation templates.",
       "Value": { "Fn::GetAtt" : ["DynamoDBPutItemsFunction", "Arn"] }
+    },
+    "KinesisCreateStreamFunctionArn": {
+      "Description": "The ARN of the KinesisCreateStreamFunction, for use in other CloudFormation templates.",
+      "Value": { "Fn::GetAtt" : ["KinesisCreateStreamFunction", "Arn"] }
     },
     "SnsSubscribeFunctionArn": {
       "Description": "The ARN of the SnsSubscribeFunction, for use in other CloudFormation templates.",
