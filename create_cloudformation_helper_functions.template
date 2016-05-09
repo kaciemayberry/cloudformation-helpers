@@ -99,11 +99,66 @@
         "Description": "Used to create a full API in Api Gateway.",
         "Handler": "aws/apiGateway.createApi",
         "Role": {"Fn::GetAtt" : [ "ApiGatewayCreateApiFunctionRole", "Arn" ] },
-        "Runtime": "nodejs",
+        "Runtime": "nodejs4.3",
         "Timeout": 30
       },
       "DependsOn": [
         "ApiGatewayCreateApiFunctionRole"
+      ]
+    },
+    "CloudWatchLogsPutMetricFilterFunctionRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version" : "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [ "lambda.amazonaws.com" ]
+              },
+              "Action": [ "sts:AssumeRole" ]
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          { "Ref": "RoleBasePolicy" }
+        ],
+        "Policies": [
+          {
+            "PolicyName": "LogFilterCreator",
+            "PolicyDocument": {
+              "Version" : "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:DeleteMetricFilter",
+                    "logs:PutMetricFilter"
+                  ],
+                  "Resource": "*"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "CloudWatchLogsPutMetricFilterFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "com.gilt.public.backoffice",
+          "S3Key": "lambda_functions/cloudformation-helpers.zip"
+        },
+        "Description": "Used to populate a DynamoDB database from CloudFormation",
+        "Handler": "aws/cloudWatchLogs.putMetricFilter",
+        "Role": {"Fn::GetAtt" : [ "CloudWatchLogsPutMetricFilterFunctionRole", "Arn" ] },
+        "Runtime": "nodejs4.3",
+        "Timeout": 30
+      },
+      "DependsOn": [
+        "CloudWatchLogsPutMetricFilterFunctionRole"
       ]
     },
     "DynamoDBPutItemsFunctionRole": {
@@ -155,7 +210,7 @@
         "Description": "Used to populate a DynamoDB database from CloudFormation",
         "Handler": "aws/dynamo.putItems",
         "Role": {"Fn::GetAtt" : [ "DynamoDBPutItemsFunctionRole", "Arn" ] },
-        "Runtime": "nodejs",
+        "Runtime": "nodejs4.3",
         "Timeout": 30
       },
       "DependsOn": [
@@ -211,7 +266,7 @@
         "Description": "Used to create a Kinesis stream",
         "Handler": "aws/kinesis.createStream",
         "Role": {"Fn::GetAtt" : [ "KinesisCreateStreamFunctionRole", "Arn" ] },
-        "Runtime": "nodejs",
+        "Runtime": "nodejs4.3",
         "Timeout": 180
       },
       "DependsOn": [
@@ -267,7 +322,7 @@
         "Description": "Used to put objects into S3.",
         "Handler": "aws/s3.putObject",
         "Role": {"Fn::GetAtt" : [ "S3PutObjectFunctionRole", "Arn" ] },
-        "Runtime": "nodejs",
+        "Runtime": "nodejs4.3",
         "Timeout": 30
       },
       "DependsOn": [
@@ -322,7 +377,7 @@
         "Description": "Used to subscribe to existing SNS topics.",
         "Handler": "aws/sns.subscribe",
         "Role": {"Fn::GetAtt" : [ "SnsSubscribeFunctionRole", "Arn" ] },
-        "Runtime": "nodejs",
+        "Runtime": "nodejs4.3",
         "Timeout": 30
       },
       "DependsOn": [
@@ -334,6 +389,10 @@
     "ApiGatewayCreateApiFunctionArn": {
       "Description": "The ARN of the ApiGatewayCreateApiFunction, for use in other CloudFormation templates.",
       "Value": { "Fn::GetAtt" : ["ApiGatewayCreateApiFunction", "Arn"] }
+    },
+    "CloudWatchLogsPutMetricFilterFunctionArn": {
+      "Description": "The ARN of the CloudWatchLogsPutMetricFilterFunction, for use in other CloudFormation templates.",
+      "Value": { "Fn::GetAtt" : ["CloudWatchLogsPutMetricFilterFunction", "Arn"] }
     },
     "DynamoDBPutItemsFunctionArn": {
       "Description": "The ARN of the DynamoDBPutItemsFunction, for use in other CloudFormation templates.",

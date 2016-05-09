@@ -66,6 +66,33 @@ general manner - much the same way CloudFormation itself has permission to do al
    ```
 
 
+## Warning
+If you update your helper stack, all client stacks (i.e. other stacks that use the helpers) will be okay
+after the new version is deployed. But some helpers rely on stored data to do the delete when the client
+stack is deleted. This is stored in a DynamoDB table and will get blown away when you delete-then-recreate
+the helper stack. You can get around this by updating the stack instead of tearing it down and recreating
+it. But it's probably a good idea to export the helper's DynamoDB table so you have a backup. If you lose
+the data, when you tear down client stacks, you may have to manually delete some resources created by the
+helpers.
+
+
+## Steps for adding a new included function
+1a. If a file already exists for the AWS service in the [aws directory](aws), add the code there.
+1b. If not, create a new file for the AWS service.
+2.  Add a new class that implements base.Handler for the new functionality. In most cases, it will be sufficient
+    to pass all parameters (other than ServiceToken through to the AWS client).
+2a. If the 'delete' can't be implemented using the 'create' parameters, make sure the 'create' returns all
+    necessary data needed for the 'delete' (such as unknowable ids); these will be stored in DynamoDB for future
+    reference in the 'delete'.
+3.  Add a new export method that calls the new class.
+4.  Add two new Resources to the [create_cloudformation_helper_functions.template](create_cloudformation_helper_functions.template):
+  a. The Role for the new function.
+  b. The function itself (referencing the new method from #3).
+5.  Add an output for the function ARN to the template.
+6.  Add an example template to the [test directory](test/aws).
+7.  Update the [README](README.md) to explain the new helper function.
+
+
 ## Included functions
 
 ### Create a full API in API Gateway
@@ -192,6 +219,22 @@ KinesisCreateStreamFunctionArn
 
 #### Example/Test Template
 [kinesis.createStream.template](test/aws/kinesis.createStream.template)
+
+
+### Put CloudWatch Logs Metric Filter
+
+Mirrors the [CloudWatchLogs.putMetricFilter API method](http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchLogs.html#putMetricFilter-property).
+
+This will delete the metric filter when the corresponding stack is deleted.
+
+#### Parameters
+Exactly the same as the documentation above.
+
+#### Reference Output Name
+CloudWatchLogsPutMetricFilterFunctionArn
+
+#### Example/Test Template
+[cloudWatchLogs.putMetricFilter.template](test/aws/cloudWatchLogs.putMetricFilter.template)
 
 
 ### Put S3 Objects
