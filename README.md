@@ -78,17 +78,19 @@ helpers.
 
 ## Steps for adding a new included function
 
-  1a. If a file already exists for the AWS service in the [aws directory](aws), add the code there.
-  1b. If not, create a new file for the AWS service.
-  2.  Add a new class that implements base.Handler for the new functionality. In most cases, it will be sufficient
-      to pass all parameters (other than ServiceToken through to the AWS client).
-  2a. If the 'delete' can't be implemented using the 'create' parameters, make sure the 'create' returns all
-      necessary data needed for the 'delete' (such as unknowable ids); these will be stored in DynamoDB for future
-      reference in the 'delete'.
+  1.
+      a. If a file already exists for the AWS service in the [aws directory](aws), add the code there.
+      b. If not, create a new file for the AWS service.
+  2.
+      a. Add a new class that implements base.Handler for the new functionality. In most cases, it will be sufficient
+         to pass all parameters (other than ServiceToken through to the AWS client).
+      b. If the 'delete' can't be implemented using the 'create' parameters, make sure the 'create' returns all
+         necessary data needed for the 'delete' (such as unknowable ids); these will be stored in DynamoDB for future
+         reference in the 'delete'.
   3.  Add a new export method that calls the new class.
   4.  Add two new Resources to the [create_cloudformation_helper_functions.template](create_cloudformation_helper_functions.template):
-    a. The Role for the new function.
-    b. The function itself (referencing the new method from #3).
+      a. The Role for the new function.
+      b. The function itself (referencing the new method from #3).
   5.  Add an output for the function ARN to the template.
   6.  Add an example template to the [test directory](test/aws).
   7.  Update the [README](README.md) to explain the new helper function.
