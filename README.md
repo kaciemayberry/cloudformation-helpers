@@ -77,6 +77,7 @@ helpers.
 
 
 ## Steps for adding a new included function
+
 1a. If a file already exists for the AWS service in the [aws directory](aws), add the code there.
 1b. If not, create a new file for the AWS service.
 2.  Add a new class that implements base.Handler for the new functionality. In most cases, it will be sufficient
