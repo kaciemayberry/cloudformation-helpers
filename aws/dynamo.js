@@ -59,11 +59,12 @@ PutItems.prototype.handleDelete = function(referenceData) {
           });
         }
       )
-      .then(function(itemsDeleted) {
-        return {
-          ItemsDeleted: itemsDeleted
-        }
-      });
+      .then(setTimeout(function(itemsDeleted) {
+          return {
+            ItemsDeleted: itemsDeleted
+          }
+        }, 5000) //add 5 second delay to prevent race of delete to re-add
+      );
     }
   });
 }
