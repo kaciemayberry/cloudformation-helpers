@@ -240,12 +240,12 @@
         },
         "Description": "Used to write a custom config to a dynamo db table.",
         "Handler": "aws/config.create",
-        "Role": {"Fn::GetAtt" : [ "DynamoDBPutItemsFunctionRole", "Arn" ] },
+        "Role": {"Fn::GetAtt" : [ "S3PutObjectFunctionRole", "Arn" ] },
         "Runtime": "nodejs4.3",
         "Timeout": 30
       },
       "DependsOn": [
-        "DynamoDBPutItemsFunctionRole"
+        "S3PutObjectFunctionRole"
       ]
     },
     "KinesisCreateStreamFunctionRole": {
